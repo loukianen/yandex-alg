@@ -1,2 +1,2 @@
-aa bc aaa
-a aa aaa bcd abcd
+7
+7 5 5 5 5 4 5
