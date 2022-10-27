@@ -41,23 +41,23 @@ console.log(res.join(' '));
 
 function getCommonNumbers(lists) {
     const [numbersA, numbersB, numbersC] = lists.map((list) => new Set(list));
-    const commonNumbers = [];
+    const commonNumbers = new Set();
 
-    for (const num of numbersA) {
-        if (numbersB.has(num)) {
-            commonNumbers.push(num);
-            numbersB.delete(num);
-        } else if(numbersC.has(num)) {
-            commonNumbers.push.num;
+    numbersA.forEach((el) => {
+        if (numbersB.has(el) || numbersC.has(el)) {
+            commonNumbers.add(el);
         }
-    }
-
-    for (const num of numbersB) {
-        if (numbersC.has(num)) {
-            commonNumbers.push(num);
+    });
+    numbersB.forEach((el) => {
+        if (numbersC.has(el)) {
+            commonNumbers.add(el);
         }
-    }
-    return commonNumbers.sort();
+    });
+    const res = [];
+    commonNumbers.forEach((el) => {
+        res.push(el);
+    });
+    return res.sort();
 }
 
 // const testData = [[[[3, 1], [1, 3], [1, 2]], [1, 3]], [[[1, 1, 2], [3, 4, 3], [5]], []]];

@@ -1,5 +1,2 @@
-4
-LiTe lite bare Bare
-10
-Bare BARE Bear bear lite Lite LiTe leti leet leto
-Bare bare   lite LiTe LiTe LiTe  LiTe
+4 1
+1 0 1 1

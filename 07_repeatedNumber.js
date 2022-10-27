@@ -41,17 +41,17 @@ console.log(res);
 
 function hasRepeatedNumber(data) {
     const [[, k], list] = data;
-    const controlLength = [list[0]];
+    const controlLength = new Set();
     
-    for (let i = 1; i < list.length; i += 1) {
+    for (let i = 0; i < list.length; i += 1) {
         const curNum = list[i];
-        if (controlLength.includes(curNum)) {
+        if (controlLength.has(curNum)) {
             return 'YES';
         }
-        if (controlLength.length >= k) {
-            controlLength.splice(0, 1);
+        if (controlLength.size >= k) {
+            controlLength.delete(list[i - k]);
         }
-        controlLength.push(curNum);
+        controlLength.add(curNum);
     }
     return 'NO';
 }
