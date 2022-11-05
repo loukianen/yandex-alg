@@ -27,12 +27,12 @@
 */
 
 
-const fs = require('fs');
+// const fs = require('fs');
 
-const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
+// const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
 
-const res = breakPalindrome(content);
-console.log(res);
+// const res = breakPalindrome(content);
+// console.log(res);
 
 function breakPalindrome(palindrome) {
     const palindromeMiddleIndex = Math.ceil((palindrome.length - 1) / 2);
@@ -47,8 +47,10 @@ function breakPalindrome(palindrome) {
     return palindrome.slice(0, -1).concat('b');
 }
 
-// const testData = [['abba', 'aaba'], ['a', ''], ['aazzaa', 'aaazaa'], ['aazaa', 'aazab'], ['aaaaa', 'aaaab'], ['aa', 'ab']];
+const testData = [['abba', 'aaba'], ['a', ''], ['aazzaa', 'aaazaa'], ['aazaa', 'aazab'], ['aaaaa', 'aaaab'], ['aa', 'ab'], ['', '']];
 
-// testData.forEach(([input, res]) => {
-//     console.log('input: ', input, 'rr: ', res, 'fact: ', breakPalindrome(input));
-// });
+testData.forEach(([input, res]) => {
+    console.log('input: ', input, 'res :', res);
+    console.assert(res === breakPalindrome(input));
+    console.log('');
+});

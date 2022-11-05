@@ -30,38 +30,44 @@
         5
 */
 
-const fs = require('fs');
+// const fs = require('fs');
 
-const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
+// const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
 
-const data = content.split('\n').filter((el, index) => index % 2 === 1).map((str) => str.split(' '));
+// const data = content.split('\n').filter((el, index) => index % 2 === 1).map((str) => str.split(' '));
 
-const res = getCommonNumbers(data);
-console.log(res.join(' '));
+// const res = getCommonNumbers(data);
+// console.log(res.join(' '));
 
 function getCommonNumbers(lists) {
     const [numbersA, numbersB, numbersC] = lists.map((list) => new Set(list));
-    const commonNumbers = new Set();
-
+    
+    const commonAB = new Set();
     numbersA.forEach((el) => {
         if (numbersB.has(el) || numbersC.has(el)) {
-            commonNumbers.add(el);
+            commonAB.add(el);
         }
     });
-    numbersB.forEach((el) => {
-        if (numbersC.has(el)) {
-            commonNumbers.add(el);
+
+    const unionAB = new Set([...numbersA, ...numbersB]);
+    commonAB.forEach((el) => {
+       unionAB.delete(el); 
+    });
+
+    numbersC.forEach((el) => {
+        if (unionAB.has(el)){
+            commonAB.add(el);
         }
     });
+
     const res = [];
-    commonNumbers.forEach((el) => {
-        res.push(el);
-    });
+    commonAB.forEach((el) => res.push(el));
+
     return res.sort();
 }
 
-// const testData = [[[[3, 1], [1, 3], [1, 2]], [1, 3]], [[[1, 1, 2], [3, 4, 3], [5]], []]];
+const testData = [[[[3, 1], [1, 3], [1, 2]], [1, 3]], [[[1, 1, 2], [3, 4, 3], [5]], []]];
 
-// testData.forEach(([input, res]) => {
-//     console.log('input: ', input, 'rr: ', res, 'fact: ', getCommonNumbers(input));
-// });
+testData.forEach(([input, res]) => {
+    console.log('input: ', input, 'rr: ', res, 'fact: ', getCommonNumbers(input));
+});
