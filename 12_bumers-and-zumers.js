@@ -45,23 +45,38 @@
 
 */
 
-// const fs = require('fs');
+const fs = require('fs');
 
-// const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
+const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
 
-// const data = content.split('\n')[1].split(' ');
+const data = content.split('\n');
 
-// const res = getInvitationCount(data);
-// console.log(res);
+function mySplit(str) {
+    const res = [];
+    let items = '';
+    for (const symbol of str) {
+        if (symbol === ' ') {
+            res.push(Number(items));
+            items = '';
+        } else {
+            items = `${items}${symbol}`;
+        }
+    }
+    res.push(Number(items));
+    return res;
+}
+
+const res = getInvitationCount(mySplit(data[1]));
+console.log(res);
 
 function getInvitationCount(data) {
     const peopleCount = data.length;
-    const peopleAges = data.sort((a,b) => Number(a) - Number(b));
+    const peopleAges = data.sort((a,b) => a - b);
     let invitationCounter = 0;
     for (let i = 0; i < peopleCount; i += 1) {
-        const x = Number(peopleAges[i]);
+        const x = peopleAges[i];
         for (let j = i + 1; j < peopleCount; j += 1) {
-            const y = Number(peopleAges[j]);
+            const y = peopleAges[j];
             if (y <= x && y > 0.5 * x + 7) {
                 invitationCounter += 1;
             } else {
@@ -69,7 +84,7 @@ function getInvitationCount(data) {
             }
         }
         for (let h = i - 1; h >= 0; h -= 1) {
-            const y = Number(peopleAges[h]);
+            const y = peopleAges[h];
             if (y > 0.5 * x + 7) {
                 invitationCounter += 1;
             } else {
@@ -80,8 +95,8 @@ function getInvitationCount(data) {
     return invitationCounter;
 }
 
-const testData = [[[16, 16], 2], [[17, 16, 18], 2], [[120, 25, 30, 100, 105], 4]];
+// const testData = [[[16, 16], 2], [[17, 16, 18], 2], [[120, 25, 30, 100, 105], 4]];
 
-testData.forEach(([input, res]) => {
-    console.log('input: ', input, 'rr: ', res, 'fact: ', getInvitationCount(input));
-});
+// testData.forEach(([input, res]) => {
+//     console.log('input: ', input, 'rr: ', res, 'fact: ', getInvitationCount(input));
+// });
