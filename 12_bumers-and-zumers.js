@@ -45,58 +45,52 @@
 
 */
 
-const fs = require('fs');
+// const fs = require('fs');
 
-const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
+// const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
 
-const data = content.split('\n');
+// const data = content.split('\n');
 
-function mySplit(str) {
-    const res = [];
-    let items = '';
-    for (const symbol of str) {
-        if (symbol === ' ') {
-            res.push(Number(items));
-            items = '';
-        } else {
-            items = `${items}${symbol}`;
-        }
-    }
-    res.push(Number(items));
-    return res;
-}
+// function mySplit(str) {
+//     const res = [];
+//     let items = '';
+//     for (const symbol of str) {
+//         if (symbol === ' ') {
+//             res.push(Number(items));
+//             items = '';
+//         } else {
+//             items = `${items}${symbol}`;
+//         }
+//     }
+//     res.push(Number(items));
+//     return res;
+// }
 
-const res = getInvitationCount(mySplit(data[1]));
-console.log(res);
+// const res = getInvitationCount(mySplit(data[1]));
+// console.log(res);
 
 function getInvitationCount(data) {
-    const peopleCount = data.length;
     const peopleAges = data.sort((a,b) => a - b);
     let invitationCounter = 0;
-    for (let i = 0; i < peopleCount; i += 1) {
-        const x = peopleAges[i];
-        for (let j = i + 1; j < peopleCount; j += 1) {
-            const y = peopleAges[j];
-            if (y <= x && y > 0.5 * x + 7) {
-                invitationCounter += 1;
-            } else {
-                break;
-            }
+    let l = 0;
+    let r = 0;
+
+    for (const personAge of peopleAges) {
+        while (peopleAges[l] <= personAge * 0.5 + 7) {
+            l += 1;
         }
-        for (let h = i - 1; h >= 0; h -= 1) {
-            const y = peopleAges[h];
-            if (y > 0.5 * x + 7) {
-                invitationCounter += 1;
-            } else {
-                break;
-            }
+        while (peopleAges[r] <= personAge) {
+            r += 1;
         }
-    };
+        if (l < r) {
+            invitationCounter += r - l - 1;
+        }
+    }
     return invitationCounter;
 }
 
-// const testData = [[[16, 16], 2], [[17, 16, 18], 2], [[120, 25, 30, 100, 105], 4]];
+const testData = [[[16, 16], 2], [[17, 16, 18], 2], [[120, 25, 30, 100, 105], 4]];
 
-// testData.forEach(([input, res]) => {
-//     console.log('input: ', input, 'rr: ', res, 'fact: ', getInvitationCount(input));
-// });
+testData.forEach(([input, res]) => {
+    console.log('input: ', input, 'rr: ', res, 'fact: ', getInvitationCount(input));
+});
