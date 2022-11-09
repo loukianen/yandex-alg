@@ -35,54 +35,76 @@
 
 */
 
-// const fs = require('fs');
+const fs = require('fs');
 
-// const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
+const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
 
-// const data = content.split('\n').reduce((acc, item, i) => {
-//     if (i === 1) {
-//         acc.collection = item.split(' ');
-//     }
-//     if (i > 2) {
-//         acc.conditions.push(item.split(' '));
-//     }
-//     return acc;
-// }, {conditions: []});
+const data = content.split('\n').reduce((acc, item, i) => {
+    if (i === 1) {
+        acc.collection = item.split(' ');
+    }
+    if (i > 2) {
+        acc.conditions.push(item.split(' '));
+    }
+    return acc;
+}, {conditions: []});
 
-// const res = countPositiveNumbers(data);
-// res.forEach((answer) => {
-//     console.log(answer);
-// });
+const res = countPositiveNumbers(data);
+res.forEach((answer) => {
+    console.log(answer);
+});
 
 function countPositiveNumbers(data) {
     const { collection, conditions } = data;
+    const positivesCount = [0];
+
+    for (let i = 0; i < collection.length; i += 1) {
+      const counter = positivesCount[i];
+      if (Number(collection[i]) > 0) {
+        positivesCount.push(counter + 1);
+      } else {
+        positivesCount.push(counter);
+      }
+    }
     const res = [];
     conditions.forEach((el) => {
         const start = Number(el[0]) - 1;
-        const finish = Number(el[1]) - 1;
-
-        let counter = 0;
-        for (i = start; i <= finish; i += 1) {
-            if (collection[i] > 0) {
-                counter += 1;
-            }
-        }
-        res.push(counter);
+        const finish = Number(el[1]);
+        
+        res.push(positivesCount[finish] - positivesCount[start]);
     });
     return res;
 }
 
-const testData = [
-  [{
-    conditions: [ [ '1', '1' ], [ '1', '3' ], [ '2', '4' ], [ '1', '5' ], ['4', '4'] ],
-    collection: [ '2', '-1', '2', '-2', '3' ],
-  }, [1, 2, 1, 3, 0]],
-  [{
-    conditions: [ [ '1', '1' ] ],
-    collection: [ '-2' ],
-  }, [0]],
-];
+// const testData = [
+//   [{
+//     conditions: [ [ '1', '1' ], [ '1', '3' ], [ '2', '4' ], [ '1', '5' ], ['4', '4'] ],
+//     collection: [ '2', '-1', '2', '-2', '3' ],
+//   }, [1, 2, 1, 3, 0]],
+//   [{
+//     conditions: [ [ '1', '1' ] ],
+//     collection: [ '-2' ],
+//   }, [0]],
+// ];
 
-testData.forEach(([input, res]) => {
-    console.log('input: ', input, 'rr: ', res, 'fact: ', countPositiveNumbers(input));
-});
+// testData.forEach(([input, res]) => {
+//     console.log('input: ', input, 'rr: ', res, 'fact: ', countPositiveNumbers(input));
+// });
+
+// function countPositiveNumbers(data) {
+//   const { collection, conditions } = data;
+//   const res = [];
+//   conditions.forEach((el) => {
+//       const start = Number(el[0]) - 1;
+//       const finish = Number(el[1]) - 1;
+
+//       let counter = 0;
+//       for (i = start; i <= finish; i += 1) {
+//           if (collection[i] > 0) {
+//               counter += 1;
+//           }
+//       }
+//       res.push(counter);
+//   });
+//   return res;
+// }
