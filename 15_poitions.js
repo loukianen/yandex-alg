@@ -37,20 +37,81 @@
 
 */
 
-// const fs = require('fs');
+const fs = require('fs');
 
-// const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
+const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
 
-// const data = content.split('\n');
-// data[0] = Number(data[0].split(' ')[1]);
-// data[1] = data[1].split(' ').map((el) => Number(el));
+const data = content.split('\n');
+data[0] = Number(data[0].split(' ')[1]);
+data[1] = data[1].split(' ').map((el) => Number(el));
 
-// const res = getMaxPoitionsUsefulness(data);
-// console.log(res);
+const res = getMaxPoitionsUsefulness(data);
+console.log(res);
+
+// function getMaxPoitionsUsefulness(data) {
+//     let [poitionCounter, ingredients] = data;
+//     ingredients.sort((a, b) => b - a);
+//     let poitionsUsefulness = 0;
+
+//     let poitions = [ingredients];
+//     for (let i = 0; i < ingredients.length - 1; i += 1) {
+//         const currentIngredient = ingredients[i];
+//         const poitionsForCurrentIngredient = [];
+//         for (let j = i + 1; j < ingredients.length; j += 1) {
+//             poitionsForCurrentIngredient.push(currentIngredient + ingredients[j]);
+//         }
+//         poitions.push(poitionsForCurrentIngredient);
+//     }
+
+//     while (poitionCounter > 0) {
+//         const maxUsefulnesses = poitions.map((item) => item[0]);
+//         const [maxUsefulness, maxUsefulnessIndex] = getMax(maxUsefulnesses);
+//         poitionsUsefulness += maxUsefulness;
+//         poitionCounter -= 1;
+//         if (poitionCounter < 1) {
+//             return poitionsUsefulness;
+//         }
+//         poitions = poitions.reduce((acc, item, idx) => {
+//             if (idx !== maxUsefulnessIndex) {
+//                 acc.push(item);
+//             } else {
+//                 if (item.length > 1) {
+//                     acc.push(item.slice(1));
+//                 }
+//             }
+//             return acc;
+//         }, []);
+//     }
+// }
+
+// function getMax(arr) {
+//     let maxValue = arr[0];
+//     let maxIndex = 0;
+//     for (let i = 0; i < arr.length; i += 1) {
+//         if (arr[i] > maxValue) {
+//             maxValue = arr[i];
+//             maxIndex = i;
+//         }
+//     }
+//     return [maxValue, maxIndex];
+// }
+
+// const testData = [
+//     [[ 5, [ -2, 3, -5, 5, 1 ] ], 26],
+//     [[ 1, [ -1, 1 ] ], 1],
+//     [[ 2, [ -1, 1 ] ], 1],
+//     [[ 3, [ -1, 1 ] ], 0],
+// ];
+
+// testData.forEach(([input, res]) => {
+//     console.log('input: ', input, 'rr: ', res, 'fact: ', getMaxPoitionsUsefulness(input));
+// });
+
+
 
 function getMaxPoitionsUsefulness(data) {
-    let [poitionCounter, unsortedIngredients] = data;
-    const ingredients = unsortedIngredients.sort((a, b) => b - a);
+    let [poitionCounter, ingredients] = data;
+    ingredients.sort((a, b) => b - a);
     let poitionsUsefulness = 0;
 
     const addPoition = (usefulness) => {
@@ -62,10 +123,10 @@ function getMaxPoitionsUsefulness(data) {
         const monoIngredientPoitionUsefulness = ingredients[i];
         for (let j = i + 1; j < ingredients.length; j += 1) {
             const dubleIngredientPoitionUsefulness = monoIngredientPoitionUsefulness + ingredients[j];
-            if (dubleIngredientPoitionUsefulness < monoIngredientPoitionUsefulness) {
-                break;
+            if (dubleIngredientPoitionUsefulness >= monoIngredientPoitionUsefulness) {
+                // break;
+                addPoition(dubleIngredientPoitionUsefulness);
             }
-            addPoition(dubleIngredientPoitionUsefulness);
             if (poitionCounter < 1) {
                 return poitionsUsefulness;
             }
@@ -75,17 +136,4 @@ function getMaxPoitionsUsefulness(data) {
             return poitionsUsefulness;
         }
     }
-    // return data;
 }
-
-
-const testData = [
-    [[ 5, [ -2, 3, -5, 5, 1 ] ], 26],
-    [[ 1, [ -1, 1 ] ], 1],
-    [[ 2, [ -1, 1 ] ], 1],
-    [[ 3, [ -1, 1 ] ], 0],
-];
-
-testData.forEach(([input, res]) => {
-    console.log('input: ', input, 'rr: ', res, 'fact: ', getMaxPoitionsUsefulness(input));
-});
