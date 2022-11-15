@@ -21,81 +21,82 @@
 
 */
 
-// const fs = require('fs');
+const fs = require('fs');
 
-// const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
+const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
 
-// const data = content.split('\n');
-// data[0] = Number(data[0].split(' ')[1]);
-// data[1] = data[1].split(' ').map((el) => Number(el));
+const data = content.split('\n');
+data[0] = Number(data[0].split(' ')[1]);
+data[1] = data[1].split(' ');
 
-// const res = getMinDistance(data);
-// console.log(res);
+const res = getMinDistance(data);
+console.log(res);
 
 function getMinDistance(data) {
     const [numberOfCows, plasesCoords] = data;
-    const initialSegments = getSegments(numberOfCows, plasesCoords.length);
-    const res = getBestDistance(plasesCoords, initialSegments);
-    return res;
-}
-
-function getSegments(numberOfCows, numbersOfPlaces) {
-    const segments = []
-    const numberOfSegmentsBetweenCows = numberOfCows - 1;
-    for (let i = 1; i <= numberOfSegmentsBetweenCows; i += 1) {
-        const leftIndex = i - 1;
-        const rightIndex = i === numberOfSegmentsBetweenCows ? numbersOfPlaces - 1 : i;
-        segments.push([leftIndex, rightIndex]);
+    let minDistance = 1;
+    let maxDistance = plasesCoords[plasesCoords.length - 1] - plasesCoords[0];
+    if (numberOfCows === 2) {
+        return maxDistance;
     }
-    return segments;
-}
+    let currentDistance = Math.floor((maxDistance + minDistance) / (numberOfCows - 1));
 
-function getBestDistance(coords, segments) {
-    const distances = segments.map(([l, r]) => coords[r] - coords[l]);
-    const [shortestDistance, shortestSegmentIndex] = getMin(distances);
-    return improveDistance(coords, segments, shortestDistance, shortestSegmentIndex);
-}
-
-function getMin(arr) {
-    let min = arr[0];
-    let minIndex = 0;
-    for (let i = 1; i < arr.length; i += 1) {
-        if (arr[i] < min) {
-            min = arr[i];
-            minIndex = i;
-        }
-    }
-    return [min, minIndex];
-}
-
-function improveDistance(coords, segments, bestDistance, bestIndex) {
-    const newSegments = segments.slice(0, bestIndex);
-    for (let i = bestIndex; i < segments.length; i += 1) {
-        const l = i === bestIndex ? segments[i][0] : newSegments[i - 1][1];
-        const r = i === bestIndex || l === segments[i][1] ? segments[i][1] + 1 : segments[i][1];
-        if (r < coords.length) {
-            newSegments.push([l, r]);
+    let cowCountWithCurrentDistance = getCowCount(currentDistance, plasesCoords);
+    while (minDistance + 1 !== maxDistance) {
+        if (cowCountWithCurrentDistance >= numberOfCows) {
+            minDistance = currentDistance;
         } else {
-            return bestDistance;
+            maxDistance = currentDistance;
         }
+        currentDistance = Math.floor((maxDistance + minDistance) / 2);
+        cowCountWithCurrentDistance = getCowCount(currentDistance, plasesCoords);
     }
-    const newDistances = newSegments.map(([l, r]) => coords[r] - coords[l]);
-    const [newBestDistance, newBestIndex] = getMin(newDistances);
-    const res = newBestDistance < bestDistance ? bestDistance : improveDistance(coords, newSegments, newBestDistance, newBestIndex);
-    return res;
+    return currentDistance;
 }
 
+function getCowCount(distance, coords) {
+    function setNextPlace() {
+        if ((coords[finish] - coords[start]) < distance) {
+            return null;
+        }
+        let l = start;
+        let r = finish;
+        let curIndex = null;
+        while(l + 1 < r) {
+            curIndex = Math.floor((r + l) / 2);
+            if ((coords[curIndex] - coords[start]) < distance) {
+                l = curIndex;
+            } else {
+                r = curIndex;
+            }
 
-const testData = [
-    [[2, [2, 5, 7, 11, 15, 20]], 18],
-    [[3, [2, 5, 7, 11, 15, 20]], 9],
-    [[4, [2, 5, 7, 11, 15, 20]], 5],
-    [[5, [2, 5, 7, 11, 15, 20]], 4],
-    [[6, [2, 5, 7, 11, 15, 20]], 2],
-    [[3, [2, 7, 11, 15, 18, 20]], 9],
-    [[3, [2, 7, 10, 15, 18, 20]], 8],
-];
+        }
+        cowCount += 1;
+        start = r;
+        return curIndex;
+    }
 
-testData.forEach(([input, res]) => {
-    console.log('input: ', input, 'rr: ', res, 'fact: ', getMinDistance(input));
-});
+    let cowCount = 1;
+    let start = 0;
+    let finish = coords.length - 1;
+
+    let nextPlaceIndex;  
+    while (nextPlaceIndex !== null) {
+        nextPlaceIndex = setNextPlace();
+    }
+    return cowCount;
+}
+
+// const testData = [
+//     [[2, [2, 5, 7, 11, 15, 20]], 18],
+//     [[3, [2, 5, 7, 11, 15, 20]], 9],
+//     [[4, [2, 5, 7, 11, 15, 20]], 5],
+//     [[5, [2, 5, 7, 11, 15, 20]], 4],
+//     [[6, [2, 5, 7, 11, 15, 20]], 2],
+//     [[3, [2, 7, 11, 15, 18, 20]], 9],
+//     [[3, [2, 7, 10, 15, 18, 20]], 8],
+// ];
+
+// testData.forEach(([input, res]) => {
+//     console.log('input: ', input, 'rr: ', res, 'fact: ', getMinDistance(input));
+// });
