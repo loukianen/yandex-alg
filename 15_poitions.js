@@ -1,6 +1,6 @@
 /*      https://contest.yandex.ru/contest/40146/problems/E/
 
-        
+        НЕ РЕШЕНО
         E. Варим зелья
         Ограничение времени 	4 секунды
         Ограничение памяти 	256Mb
@@ -37,16 +37,16 @@
 
 */
 
-const fs = require('fs');
+// const fs = require('fs');
 
-const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
+// const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
 
-const data = content.split('\n');
-data[0] = Number(data[0].split(' ')[1]);
-data[1] = data[1].split(' ').map((el) => Number(el));
+// const data = content.split('\n');
+// data[0] = Number(data[0].split(' ')[1]);
+// data[1] = data[1].split(' ').map((el) => Number(el));
 
-const res = getMaxPoitionsUsefulness(data);
-console.log(res);
+// const res = getMaxPoitionsUsefulness(data);
+// console.log(res);
 
 // function getMaxPoitionsUsefulness(data) {
 //     let [poitionCounter, ingredients] = data;
@@ -96,44 +96,105 @@ console.log(res);
 //     return [maxValue, maxIndex];
 // }
 
-// const testData = [
-//     [[ 5, [ -2, 3, -5, 5, 1 ] ], 26],
-//     [[ 1, [ -1, 1 ] ], 1],
-//     [[ 2, [ -1, 1 ] ], 1],
-//     [[ 3, [ -1, 1 ] ], 0],
-// ];
+const testData = [
+    [[ 5, [ -2, 3, -5, 5, 1 ] ], 26],
+    [[ 1, [ -1, 1 ] ], 1],
+    [[ 2, [ -1, 1 ] ], 1],
+    [[ 3, [ -1, 1 ] ], 0],
+];
 
-// testData.forEach(([input, res]) => {
-//     console.log('input: ', input, 'rr: ', res, 'fact: ', getMaxPoitionsUsefulness(input));
-// });
-
-
+testData.forEach(([input, res]) => {
+    console.log('input: ', input, 'rr: ', res, 'fact: ', getMaxPoitionsUsefulness(input));
+});
 
 function getMaxPoitionsUsefulness(data) {
-    let [poitionCounter, ingredients] = data;
+    const [poitionsNumber, ingredients] = data;
     ingredients.sort((a, b) => b - a);
     let poitionsUsefulness = 0;
-
-    const addPoition = (usefulness) => {
-        poitionsUsefulness = poitionsUsefulness + usefulness;
-        poitionCounter -= 1;
+    let minUsefulness = -1000000;
+    let maxUsefulness = 1000000;
+    
+    while (minUsefulness < maxUsefulness) {
+        const curUsefulness = Math.floor((minUsefulness + maxUsefulness) / 2);
+        const [poitionCounter, totalUsefullness] = calcPoitionsData(curUsefulness, ingredients);
+        poitionsUsefulness = totalUsefullness;
+        // console.log(minUsefulness, maxUsefulness, curUsefulness);
+        if (poitionCounter > poitionsNumber) {
+            minUsefulness = curUsefulness + 1;
+        } else {
+            maxUsefulness = curUsefulness;
+        }
+        // console.log('poitionCounter: ', poitionCounter, 'poitionsUsefulness: ', poitionsUsefulness);
     }
 
-    for (let i = 0; i < ingredients.length; i += 1) {
-        const monoIngredientPoitionUsefulness = ingredients[i];
-        for (let j = i + 1; j < ingredients.length; j += 1) {
-            const dubleIngredientPoitionUsefulness = monoIngredientPoitionUsefulness + ingredients[j];
-            if (dubleIngredientPoitionUsefulness >= monoIngredientPoitionUsefulness) {
-                // break;
-                addPoition(dubleIngredientPoitionUsefulness);
-            }
-            if (poitionCounter < 1) {
-                return poitionsUsefulness;
-            }
-        }
-        addPoition(monoIngredientPoitionUsefulness);
-        if (poitionCounter < 1) {
-            return poitionsUsefulness;
-        }
-    }
+    return poitionsUsefulness;   
 }
+
+function calcPoitionsData(usefulness, ingredients) {
+    if (usefulness > ingredients[0]) {
+        return [0, 0];
+    }
+    let poitionCounter = 1;
+    let totalUsefullness = 0;
+    let isUsefulnessOfPositionsFromSingleIngredientCounted = false;
+
+    const summIngredientsUsefulness = [ingredients[0]];
+
+    let strongestIngIndex = 0;
+    let weakestIngIndex = 0;
+
+    for (let i = 1; i < ingredients.length; i += 1) {
+        // считаем префиксные суммы (текушее значение + предыдушая сумма)
+        const ingUsefulness = ingredients[i];
+        summIngredientsUsefulness.push(summIngredientsUsefulness[i - 1] + ingUsefulness);
+
+        // находим количество и общую полезность зелий из одного ингредиента с полезностью не менее заданной
+        if (ingUsefulness >= usefulness) {
+            poitionCounter += 1;
+        } else if (!isUsefulnessOfPositionsFromSingleIngredientCounted) {
+            totalUsefullness += summIngredientsUsefulness[i - 1];
+            isUsefulnessOfPositionsFromSingleIngredientCounted = true;
+        }
+
+        // находим индекс слабейшего ингредиента, который в сумме с первым(сильнейшим) дает требуемую полезность
+        const usefulnessOfPoitionFromFirstAndCurrentIngredient = ingredients[0] + ingUsefulness;
+        if (usefulnessOfPoitionFromFirstAndCurrentIngredient >= usefulness) {
+            weakestIngIndex = i;
+            // console.log("weakestIngIndex: ", weakestIngIndex);
+        } else {
+            break;
+        }
+    }
+
+    // находим количество и общую полезность зелий из первого и слабее ингредиентов с полезностью не менее заданной
+    // console.log(summIngredientsUsefulness);
+    const secondIngrudientsAmount = weakestIngIndex - strongestIngIndex;
+    poitionCounter += secondIngrudientsAmount;
+    
+    const summOfSecondIngredientsUsefulness = summIngredientsUsefulness[weakestIngIndex] - summIngredientsUsefulness[strongestIngIndex];
+    totalUsefullness += ingredients[0] * secondIngrudientsAmount + summOfSecondIngredientsUsefulness;
+
+    // подсчитываем количество и общую полезность зелий из двух ингредиентов
+    while (strongestIngIndex < weakestIngIndex) {
+        strongestIngIndex += 1;
+        let l = strongestIngIndex;
+        let r = weakestIngIndex - 1;
+        while (l < r) {
+            const curIndex = Math.floor((l + r + 1) / 2);
+            if ((ingredients[strongestIngIndex] + ingredients[curIndex]) >= usefulness) {
+                l = curIndex;
+            } else {
+                r = curIndex - 1;
+            }
+        }
+        weakestIngIndex = l;
+        const seconds = weakestIngIndex - strongestIngIndex;
+        poitionCounter += seconds;
+        const sumSecondsIUsefulness = summIngredientsUsefulness[weakestIngIndex] - summIngredientsUsefulness[strongestIngIndex];
+        totalUsefullness += ingredients[strongestIngIndex] * seconds + sumSecondsIUsefulness;
+    }
+
+    return [poitionCounter, totalUsefullness];
+}
+
+// console.log(calcPoitionsData(4, [ 5, 3, 1, -2, -5]));

@@ -36,55 +36,28 @@ function getMinDistance(data) {
     const [numberOfCows, plasesCoords] = data;
     let minDistance = 1;
     let maxDistance = plasesCoords[plasesCoords.length - 1] - plasesCoords[0];
-    if (numberOfCows === 2) {
-        return maxDistance;
-    }
-    let currentDistance = Math.floor((maxDistance + minDistance) / (numberOfCows - 1));
-
-    let cowCountWithCurrentDistance = getCowCount(currentDistance, plasesCoords);
-    while (minDistance + 1 !== maxDistance) {
-        if (cowCountWithCurrentDistance >= numberOfCows) {
+    
+    while (maxDistance > minDistance) {
+        const currentDistance = Math.floor((minDistance + maxDistance + 1) / 2);
+        if (isCurDictanceGood(currentDistance, numberOfCows, plasesCoords)) {
             minDistance = currentDistance;
         } else {
-            maxDistance = currentDistance;
+            maxDistance = currentDistance - 1;
         }
-        currentDistance = Math.floor((maxDistance + minDistance) / 2);
-        cowCountWithCurrentDistance = getCowCount(currentDistance, plasesCoords);
     }
-    return currentDistance;
+    return minDistance;
 }
 
-function getCowCount(distance, coords) {
-    function setNextPlace() {
-        if ((coords[finish] - coords[start]) < distance) {
-            return null;
-        }
-        let l = start;
-        let r = finish;
-        let curIndex = null;
-        while(l + 1 < r) {
-            curIndex = Math.floor((r + l) / 2);
-            if ((coords[curIndex] - coords[start]) < distance) {
-                l = curIndex;
-            } else {
-                r = curIndex;
-            }
-
-        }
-        cowCount += 1;
-        start = r;
-        return curIndex;
-    }
-
+function isCurDictanceGood(distance, cowNumber, coords) {
     let cowCount = 1;
-    let start = 0;
-    let finish = coords.length - 1;
-
-    let nextPlaceIndex;  
-    while (nextPlaceIndex !== null) {
-        nextPlaceIndex = setNextPlace();
+    let previousPlace = coords[0];
+    for (let i = 1; i < coords.length; i += 1) {
+        if ((coords[i] - previousPlace) >= distance) {
+            cowCount += 1;
+            previousPlace = coords[i];
+        }
     }
-    return cowCount;
+    return cowCount >= cowNumber;
 }
 
 // const testData = [
