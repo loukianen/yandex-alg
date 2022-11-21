@@ -35,38 +35,46 @@
 
 */
 
-const fs = require('fs');
+// const fs = require('fs');
 
-const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
+// const content = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
 
-const data = content.split('\n');
+// const data = content.split('\n');
 
-const res = getMaxGroupNumber(data.filter((el, i) => i % 2 > 0).map((el) => el.split(' ')));
-console.log(res);
+// const res = getMaxGroupNumber(data.filter((el, i) => i % 2 > 0).map((el) => el.split(' ')));
+// console.log(res);
 
 function getMaxGroupNumber(data) {
     const [groups, rooms] = data;
-    rooms.sort((a, b) => Number(b) - Number(a));
+    rooms.sort((a, b) => Number(a) - Number(b));
     groups.sort((a, b) => Number(a) - Number(b));
     let res = 0;
+    let roomCurIndex = 0;
 
     for (const group of groups) {
-        if (rooms.length < 1) {
+        if (roomCurIndex >= rooms.length) {
             break;
         }
-        if (Number(group) <= Number(rooms[rooms.length - 1])) {
-            res += 1;
-            rooms.pop();
+        for (let i = roomCurIndex; i < rooms.length; i += 1) {
+            if (Number(group) <= Number(rooms[i])) {
+                res += 1;
+                roomCurIndex = i + 1;
+                break;
+            }
         }
     }
     return res;
 }
 
-// const testData = [
-//     [[[3, 1, 2], [1, 1]], 1],
-//     [[[1, 2], [3, 2, 1]], 2],
-// ];
+const testData = [
+    [[[3, 1, 2], [1, 1]], 1],
+    [[[1, 2], [3, 2, 1]], 2],
+    [[[], []], 0],
+    [[[3, 3, 3], [1]], 0],
+    [[[1, 2, 3], [1, 1, 1]], 1],
+    [[[123, 342, 567], [123, 987, 354]], 3],
+];
 
-// testData.forEach(([input, res]) => {
-//     console.log('input: ', input, 'rr: ', res, 'fact: ', getMaxGroupNumber(input));
-// });
+testData.forEach(([input, res]) => {
+    console.log('input: ', input, 'rr: ', res, 'fact: ', getMaxGroupNumber(input));
+});
