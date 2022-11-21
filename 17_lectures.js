@@ -52,8 +52,19 @@ const res = getMaxLecturesNumber(data);
 console.log(res);
 
 function getMaxLecturesNumber(data) {
-    
-    return data;
+    data.sort((a, b) => a[1] - b[1]);
+
+    let res = 0;
+    let curMaxStartOfLecture = 0;
+
+    for (const [start, finish] of data) {
+        if (Number(start) >= curMaxStartOfLecture) {
+            res += 1;
+            curMaxStartOfLecture = Number(finish);
+        }
+    }
+
+    return res;
 }
 
 // const testData = [
