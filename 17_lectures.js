@@ -55,12 +55,12 @@ function getMaxLecturesNumber(data) {
     data.sort((a, b) => a[1] - b[1]);
 
     let res = 0;
-    let curMaxStartOfLecture = 0;
+    let curMinStartOfLecture = 0;
 
     for (const [start, finish] of data) {
-        if (Number(start) >= curMaxStartOfLecture) {
+        if (Number(start) >= curMinStartOfLecture) {
             res += 1;
-            curMaxStartOfLecture = Number(finish);
+            curMinStartOfLecture = Number(finish);
         }
     }
 
